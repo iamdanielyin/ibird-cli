@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+
+const program = require('commander');
+const path = require('path');
+const fs = require('fs');
+const pkgjson = require('../package.json');
+const { info, warn, success, error } = require('../src/utils/log');
+
+program
+.version(pkgjson.version, '-v, --version')
+.arguments('<URL_OR_FILE> [METHOD]')
+.action(function (URL_OR_FILE, METHOD) {
+    if (!URL_OR_FILE) return error(`You must specify a routing request URL or file name.`);
+    let file = URL_OR_FILE;
+    let method = METHOD ? METHOD.toLowerCase() : 'get';
+    if (URL_OR_FILE.lastIndexOf('.') > 0) {
+        file = path.isAbsolute(URL_OR_FILE) ? URL_OR_FILE : path.resolve(process.cwd(), 'app/routes', URL_OR_FILE);
+    } else {
+        file = file.replace(/\//g, '_');
+        file = `${file}_${method}.js`;
+        file = path.resolve(process.cwd(), 'app/routes', file);
+    }
+    try {
+        fs.unlinkSync(file);
+        success(`Delete the route successfully: ${file.replace(new RegExp(`${process.cwd()}/`, 'g'), '')}`);
+    } catch (e) {
+        warn(`The route may have been deleted: ${file.replace(new RegExp(`${process.cwd()}/`, 'g'), '')}`);
+    }
+});
+
+program.on('--help', function () {
+    console.log('  Examples:');
+    console.log('');
+    console.log('    $ ibird unroute /test');
+    console.log('    $ ibird unroute /test post');
+    console.log('    $ ibird unroute /home/ibird/test.js');
+    console.log('');
+});
+
+program.parse(process.argv);

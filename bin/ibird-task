@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+
+const os = require('os');
+const Mustache = require('mustache');
+const program = require('commander');
+const path = require('path');
+const fs = require('fs');
+const pkgjson = require('../package.json');
+const templatesDir = path.resolve(__dirname, '../src/templates');
+const { info, warn, success, error } = require('../src/utils/log');
+
+program
+.version(pkgjson.version, '-v, --version')
+.option('-n, --taskName <name>', 'Specifies the name of the task')
+.option('-s, --spec <spec>', 'Specifies the name of the task')
+.option('-d, --displayName <displayName>', 'Specifies the display name of the task')
+.option('-f, --file <filename>', 'Specifies the file name of the task');
+
+program.on('--help', function () {
+    console.log('  Examples:');
+    console.log('');
+    console.log('    $ ibird task -n TestTask -s "* * * * * *"');
+    console.log('    $ ibird task -n TestTask -s "* * * * * *" -d 测试');
+    console.log('    $ ibird task -n TestTask -s "* * * * * *" -d 测试 -f test_task.js');
+    console.log('');
+});
+
+program.parse(process.argv);
+
+if (!program.taskName || !program.spec) return error(`The task name and execution rules can not be empty.`);
+program.file = program.file || `${program.taskName}.js`;
+program.file = program.file.lastIndexOf('.') > 0 ? program.file : `${program.file}.js`;
+program.file = path.isAbsolute(program.file) ? program.file : path.resolve(process.cwd(), 'app/tasks', program.file);
+
+const template = fs.readFileSync(path.resolve(templatesDir, 'task.ibrc')).toString();
+const output = Mustache.render(template, {
+    username: os.userInfo().username,
+    created: new Date().toLocaleDateString(),
+    name: program.taskName,
+    displayName: program.displayName,
+    spec: program.spec
+});
+fs.writeFileSync(program.file, output);
+success(`Create the task successfully: ${program.file.replace(new RegExp(`${process.cwd()}/`, 'g'), '')}`);

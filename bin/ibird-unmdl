@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+
+const program = require('commander');
+const path = require('path');
+const fs = require('fs');
+const pkgjson = require('../package.json');
+const { info, warn, success, error } = require('../src/utils/log');
+
+program
+.version(pkgjson.version, '-v, --version')
+.arguments('<NAME_OR_FILE>')
+.action(function (NAME_OR_FILE) {
+    if (!NAME_OR_FILE) return error(`You must specify a middleware file name.`);
+    let file = NAME_OR_FILE;
+    if (NAME_OR_FILE.lastIndexOf('.') > 0) {
+        file = path.isAbsolute(NAME_OR_FILE) ? NAME_OR_FILE : path.resolve(process.cwd(), 'app/middleware', NAME_OR_FILE);
+    } else {
+        file = path.resolve(process.cwd(), 'app/middleware', `${file}.js`);
+    }
+    try {
+        fs.unlinkSync(file);
+        success(`Delete the middleware successfully: ${file.replace(new RegExp(`${process.cwd()}/`, 'g'), '')}`);
+    } catch (e) {
+        warn(`The middleware may have been deleted: ${file.replace(new RegExp(`${process.cwd()}/`, 'g'), '')}`);
+    }
+});
+
+program.on('--help', function () {
+    console.log('  Examples:');
+    console.log('');
+    console.log('    $ ibird unmdl test_mdl');
+    console.log('    $ ibird unmdl test_mdl.js');
+    console.log('    $ ibird unmdl /home/ibird/test_mdl.js');
+    console.log('');
+});
+
+program.parse(process.argv);

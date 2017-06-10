@@ -1,0 +1,23 @@
+
+html, body, :global(#root) {
+  height: 100%;
+}
+
+a, a:visited {
+  text-decoration: none;
+}
+
+:global(.ant-table-body) {
+  table {
+    th, td {
+      white-space: nowrap;
+      max-width: 300px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+}
+
+:global(.ibird-form) {
+  min-width: 360px;
+}

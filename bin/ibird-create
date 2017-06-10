@@ -1,0 +1,91 @@
+#!/usr/bin/env node
+
+const program = require('commander');
+const fetch = require('node-fetch');
+const unzip = require('unzip');
+const path = require('path');
+const chalk = require('chalk');
+const fs = require('fs');
+const fsx = require('fs-extra');
+const pkgjson = require('../package.json');
+const { info, warn, success, error } = require('../src/utils/log');
+
+program
+.version(pkgjson.version, '-v, --version')
+.option('-p, --project <name>', 'Specify a project name')
+.option('-s, --scaffold <github username>/<github project>[/<branch>]', 'Specify a scaffold')
+.option('-f, --force', 'Ignore local cache');
+
+program.on('--help', function () {
+    console.log('  Examples:');
+    console.log('');
+    console.log('    $ ibird create -p myApp');
+    console.log('    $ ibird create -p myApp -s yinfxs/ibird-starter');
+    console.log('    $ ibird create -p myApp -s yinfxs/ibird-starter/master');
+    console.log('    $ ibird create -p myApp -s yinfxs/ibird-starter -f');
+    console.log('');
+});
+
+
+program.parse(process.argv);
+/**
+ * 调用脚手架创建项目
+ * @param project 项目名称
+ * @param scaffold 脚手架flag
+ * @param force 是否忽略本地缓存
+ * @returns {Promise.<*>}
+ */
+async function createProject({ project, scaffold, force }) {
+    scaffold = scaffold || 'yinfxs/ibird-starter';
+    const successMessage = `Congratulations, create '${project}' project success!`;
+    let scaffoldURL = null;
+    if (!project) return;
+    let fileName = null, localCacheName = null;
+    if (!scaffold.startsWith('http')) {
+        const split = scaffold.split('/');
+        if (!split.length > 1) return error(`Specify the scaffolding error '${scaffold}', please refer to the following example.`);
+        split[2] = split[2] || 'master';
+        scaffoldURL = `https://codeload.github.com/${split[0]}/${split[1]}/zip/${split[2]}`;
+        fileName = `${split[1]}-${split[2]}`;
+        localCacheName = `${split[0]}-${fileName}`;
+    }
+    const zipFilePath = path.resolve(process.cwd(), `${fileName}.zip`);
+    const unzipDirPath = path.resolve(process.cwd(), `${fileName}`);
+    const scaffoldsDirPath = path.resolve(__dirname, `../scaffolds/${localCacheName}`);
+    const projectDirPath = path.resolve(process.cwd(), `${project}`);
+    // 本地存在且指定force
+    if (!force) {
+        try {
+            const stat = fs.lstatSync(scaffoldsDirPath);
+            if (stat.isDirectory()) {
+                info(`Create the project using the local cache: ${scaffoldsDirPath}`);
+                fsx.copySync(scaffoldsDirPath, projectDirPath, { overwrite: true });
+                return success(successMessage);
+            }
+        } catch (e) {
+            // ignore error.
+        }
+    }
+    info(`Start downloading scaffolding from github: ${scaffoldURL}`);
+    try {
+        const res = await fetch(scaffoldURL);
+        const writeStream = fs.createWriteStream(zipFilePath);
+        writeStream.on('close', function (e) {
+            if (e) return error(`Download scaffolding failed: '${e}'.`);
+            // 解压
+            const readStream = fs.createReadStream(zipFilePath).pipe(unzip.Extract({ path: process.cwd() }));
+            readStream.on('close', function (e) {
+                if (e) return error(`Unzip scaffolding file failed: '${e}'.`);
+                success(successMessage);
+                fsx.removeSync(zipFilePath);
+                fsx.moveSync(unzipDirPath, projectDirPath, { overwrite: true });
+                fsx.copySync(projectDirPath, scaffoldsDirPath, { overwrite: true });
+            });
+        });
+        res.body.pipe(writeStream);
+    } catch (e) {
+        error(`Download scaffolding failed: '${e}'.`);
+    }
+}
+
+createProject(program);

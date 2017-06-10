@@ -1,0 +1,43 @@
+{
+  "name": "ibird-starter",
+  "version": "1.0.0",
+  "description": "ibird App Starter",
+  "main": "app/index.js",
+  "scripts": {
+    "start": "IBIRD_ENV=development nodemon app/index.js",
+    "pro": "IBIRD_ENV=production node app/index.js",
+    "test": "IBIRD_ENV=test node app/index.js",
+    "deploy": "node app/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yinfxs/ibird-starter.git"
+  },
+  "keywords": [
+    "ibird",
+    "starter",
+    "scaffolding"
+  ],
+  "author": "yinfxs",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/yinfxs/ibird-starter/issues"
+  },
+  "homepage": "https://github.com/yinfxs/ibird-starter#readme",
+  "dependencies": {
+    "ibird-core": "^0.9.41",
+    "ibird-log": "^0.9.4",
+    "ibird-task": "^0.9.2",
+    "ibird-token": "^0.9.32",
+    "lodash": "^4.17.4",
+    "moment": "^2.18.1"
+  },
+  "devDependencies": {
+    "ibird-docs": "^0.9.14",
+    "ibird-patch": "^0.9.9",
+    "nodemon": "^1.11.0"
+  },
+  "engines": {
+    "node": ">=7.6.0"
+  }
+}
