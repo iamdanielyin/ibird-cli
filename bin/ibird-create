@@ -12,17 +12,17 @@ const { info, warn, success, error } = require('../src/utils/log');
 
 program
 .version(pkgjson.version, '-v, --version')
-.option('-p, --project <name>', 'Specify a project name')
+.option('-n, --project <name>', 'Specify a project name')
 .option('-s, --scaffold <github username>/<github project>[/<branch>]', 'Specify a scaffold')
 .option('-f, --force', 'Ignore local cache');
 
 program.on('--help', function () {
     console.log('  Examples:');
     console.log('');
-    console.log('    $ ibird create -p myApp');
-    console.log('    $ ibird create -p myApp -s yinfxs/ibird-starter');
-    console.log('    $ ibird create -p myApp -s yinfxs/ibird-starter/master');
-    console.log('    $ ibird create -p myApp -s yinfxs/ibird-starter -f');
+    console.log('    $ ibird create -n myApp');
+    console.log('    $ ibird create -n myApp -s yinfxs/ibird-starter');
+    console.log('    $ ibird create -n myApp -s yinfxs/ibird-starter/master');
+    console.log('    $ ibird create -n myApp -s yinfxs/ibird-starter -f');
     console.log('');
 });
 

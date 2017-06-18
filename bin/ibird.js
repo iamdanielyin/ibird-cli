@@ -8,6 +8,7 @@ program
 .version(pkgjson.version, '-v, --version')
 .usage('COMMAND')
 .command('create', 'Create a new project')
+.command('use', 'Use a client template')
 .command('model', 'Generate model')
 .command('route', 'Generate routing')
 .command('mdl', 'Generate middleware')
