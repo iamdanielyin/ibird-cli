@@ -6,7 +6,7 @@ const program = require('commander');
 const path = require('path');
 const fs = require('fs');
 const pkgjson = require('../package.json');
-const templatesDir = path.resolve(__dirname, '../src/templates');
+const tplsDir = path.resolve(__dirname, '../src/tpls');
 const { info, warn, success, error } = require('../src/utils/log');
 
 program
@@ -31,7 +31,7 @@ if (!program.url) return error(`The request URL can not be empty.`);
 program.method = program.method ? program.method.toLowerCase() : 'get';
 program.file = program.file || `${program.url.replace(/\//g, '_')}_${program.method}.js`;
 program.file = path.isAbsolute(program.file) ? program.file : path.resolve(process.cwd(), 'app/routes', program.file);
-const template = fs.readFileSync(path.resolve(templatesDir, 'route.ibrc')).toString();
+const template = fs.readFileSync(path.resolve(tplsDir, 'route.tpl')).toString();
 const output = Mustache.render(template, {
     username: os.userInfo().username,
     created: new Date().toLocaleDateString(),

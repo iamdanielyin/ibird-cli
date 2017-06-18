@@ -6,7 +6,7 @@ const program = require('commander');
 const path = require('path');
 const fs = require('fs');
 const pkgjson = require('../package.json');
-const templatesDir = path.resolve(__dirname, '../src/templates');
+const tplsDir = path.resolve(__dirname, '../src/tpls');
 const { info, warn, success, error } = require('../src/utils/log');
 
 program
@@ -27,7 +27,7 @@ program.parse(process.argv);
 if (!program.file) return error(`The middleware file name can not be empty.`);
 program.file = (program.file.lastIndexOf('.') >= 0) ? program.file : `${program.file}.js`;
 program.file = path.isAbsolute(program.file) ? program.file : path.resolve(process.cwd(), 'app/middleware', program.file);
-const template = fs.readFileSync(path.resolve(templatesDir, 'middleware.ibrc')).toString();
+const template = fs.readFileSync(path.resolve(tplsDir, 'middleware.tpl')).toString();
 const output = Mustache.render(template, {
     username: os.userInfo().username,
     created: new Date().toLocaleDateString()
