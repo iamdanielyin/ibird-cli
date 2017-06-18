@@ -14,7 +14,8 @@ program
 .version(pkgjson.version, '-v, --version')
 .option('-d, --dirname <name>', 'Specify a folder name')
 .option('-m, --template <github username>/<github project>[/<branch>]', 'Specify a client template')
-.option('-f, --force', 'Ignore local cache');
+.option('-f, --force', 'Ignore local cache')
+.option('-N, --no-install', 'Do not install project dependencies');
 
 program.on('--help', function () {
     console.log('  Examples:');
@@ -27,6 +28,31 @@ program.on('--help', function () {
 });
 
 program.parse(process.argv);
+
+/**
+ * 安装项目依赖
+ * @param dirnameDirPath 项目所在目录
+ * @param successMessage 操作成功提示信息
+ */
+function installDependencies(dirnameDirPath, successMessage) {
+    if (!program['no-install']) {
+        info(`Start installing project dependencies...`);
+        exec('npm i', {
+            cwd: dirnameDirPath,
+            maxBuffer: 20000 * 1024
+        }, (error, stdout) => {
+            if (error) {
+                error(`Project dependent installation exception: ${error}`);
+                return;
+            }
+            info(`${stdout}`);
+            success(successMessage);
+        });
+    } else {
+        success(successMessage);
+    }
+}
+
 /**
  * 引用模板创建项目
  * @param dirname 目录名称
@@ -59,7 +85,8 @@ async function useTemplate({ dirname, template, force }) {
             if (stat.isDirectory()) {
                 info(`Using local caching: ${templatesDirPath}`);
                 fsx.copySync(templatesDirPath, dirnameDirPath, { overwrite: true });
-                return success(successMessage);
+                installDependencies(dirnameDirPath, successMessage);
+                return;
             }
         } catch (e) {
             // ignore error.
@@ -75,10 +102,10 @@ async function useTemplate({ dirname, template, force }) {
             const readStream = fs.createReadStream(zipFilePath).pipe(unzip.Extract({ path: process.cwd() }));
             readStream.on('close', function (e) {
                 if (e) return error(`Unzip template failed: '${e}'.`);
-                success(successMessage);
                 fsx.removeSync(zipFilePath);
                 fsx.moveSync(unzipDirPath, dirnameDirPath, { overwrite: true });
                 fsx.copySync(dirnameDirPath, templatesDirPath, { overwrite: true });
+                installDependencies(dirnameDirPath, successMessage);
             });
         });
         res.body.pipe(writeStream);
