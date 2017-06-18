@@ -1,13 +1,10 @@
 {
   "name": "ibird-cli",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "The ibird command line tool.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "main": "bin/ibird.js",
   "bin": {
-    "ibird": "./bin/ibird"
+    "ibird": "./bin/ibird.js"
   },
   "repository": {
     "type": "git",

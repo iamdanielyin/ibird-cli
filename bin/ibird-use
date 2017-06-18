@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const program = require('commander');
+const exec = require('child_process').exec;
 const fetch = require('node-fetch');
 const unzip = require('unzip');
 const path = require('path');
@@ -15,7 +16,7 @@ program
 .option('-d, --dirname <name>', 'Specify a folder name')
 .option('-m, --template <github username>/<github project>[/<branch>]', 'Specify a client template')
 .option('-f, --force', 'Ignore local cache')
-.option('-N, --no-install', 'Do not install project dependencies');
+.option('-N, --noinstall', 'Do not install project dependencies');
 
 program.on('--help', function () {
     console.log('  Examples:');
@@ -35,7 +36,7 @@ program.parse(process.argv);
  * @param successMessage 操作成功提示信息
  */
 function installDependencies(dirnameDirPath, successMessage) {
-    if (!program['no-install']) {
+    if (!program['noinstall']) {
         info(`Start installing project dependencies...`);
         exec('npm i', {
             cwd: dirnameDirPath,
