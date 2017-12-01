@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+/**
+ * 模块依赖
+ */
+
+const program = require('commander');
+const pkg = require('../package.json');
+
+program.version(pkg.version, '-v, --version')
+    .usage('<command>')
+    .command('init', 'init a project')
+    .parse(process.argv);

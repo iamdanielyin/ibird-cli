@@ -1,0 +1,84 @@
+#!/usr/bin/env node
+
+/**
+ * 模块依赖
+ */
+
+const program = require('commander');
+const path = require('path');
+const fs = require('fs');
+const chalk = require('chalk');
+const inquirer = require('inquirer');
+const download = require('download-git-repo');
+const ora = require('ora');
+const exists = fs.existsSync;
+const cwd = process.cwd();
+const cwdname = path.parse(cwd).name;
+const pkg = require('../package.json');
+
+let origin = 'yinfxs/ibird-boilerplate';
+const questions = [
+    {
+        type: 'input',
+        name: 'name',
+        message: `project name: (${cwdname})`,
+    },
+    {
+        type: 'input',
+        name: 'path',
+        message: 'project directory: (./)',
+    },
+    {
+        type: 'input',
+        name: 'origin',
+        message: `which boilerplate: (${origin})`,
+    }
+];
+
+program.version(pkg.version, '-v, --version')
+    .option('-y, --yes', 'init with default values')
+    .parse(process.argv);
+
+console.log(`
+This utility will walk you through creating a ibird app.
+It only covers the most common items, and tries to guess sensible defaults.
+
+Press ^C at any time to quit.
+`);
+
+if (program.yes) {
+    init();
+} else {
+    inquirer.prompt(questions).then((answers) => {
+        init(answers);
+    });
+}
+
+/**
+ * 初始化项目
+ * @param answers 
+ */
+function init(answers) {
+    answers = answers || {};
+    origin = answers.origin || origin;
+
+    const targetPath = path.resolve(cwd, answers.path || './');
+    const projectName = answers.name || cwdname;
+    const projectDir = path.join(targetPath, projectName);
+    if (exists(projectDir)) {
+        console.log(chalk.red(`exit: directory(${projectDir}) already exists, please delete the directory and try again`));
+        return;
+    }
+
+    const spinner = ora('Downloading boilerplate...');
+    spinner.start();
+
+    download(origin, projectDir, (err) => {
+        spinner.stop();
+        if (err) {
+            console.log(chalk.red(`Failed to download repo https://github.com/${origin}`, err));
+        } else {
+            console.log(chalk.green(`Success to download repo https://github.com/${origin} to ${projectDir}`));
+        }
+    })
+}
