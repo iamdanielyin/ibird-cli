@@ -7,6 +7,7 @@
 const program = require('commander');
 const path = require('path');
 const fs = require('fs');
+const fsx = require('fs-extra');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 const download = require('download-git-repo');
@@ -66,10 +67,29 @@ function init(answers) {
     const projectName = answers.name || cwdname;
     const projectDir = path.join(targetPath, projectName);
     if (exists(projectDir)) {
-        console.log(chalk.red(`exit: directory(${projectDir}) already exists, please delete the directory and try again`));
+        inquirer.prompt([
+            {
+                type: 'confirm',
+                name: 'delete',
+                message: chalk.yellow(`Directory(${projectDir}) already exists, do you want to overwrite this directory?`),
+            }
+        ]).then((confirms) => {
+            if (confirms.delete) {
+                fsx.removeSync(projectDir);
+                downloadBoilerplate(origin, projectDir);
+            }
+        });
         return;
     }
+    downloadBoilerplate(origin, projectDir);
+}
 
+/**
+ * 下载项目模板
+ * @param origin - 项目模板
+ * @param projectDir - 本地目录
+ */
+function downloadBoilerplate(origin, projectDir) {
     const spinner = ora('Downloading boilerplate...');
     spinner.start();
 
