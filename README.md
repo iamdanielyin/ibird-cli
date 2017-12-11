@@ -20,10 +20,10 @@ $ npm install ibird-cli --global
 
 ## Usage
 
-### Init a project
+### Create a project
 
 ```shell
-$ ibird init
+$ ibird new
 ```
 
 ### Display help

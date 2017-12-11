@@ -9,5 +9,5 @@ const pkg = require('../package.json');
 
 program.version(pkg.version, '-v, --version')
     .usage('<command>')
-    .command('init', 'init a project')
+    .command('new', 'new a project')
     .parse(process.argv);
