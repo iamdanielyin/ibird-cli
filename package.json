@@ -1,6 +1,6 @@
 {
   "name": "ibird-cli",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.4",
   "description": "A Command line tool for ibird.",
   "bin": {
     "ibird": "./bin/ibird"
