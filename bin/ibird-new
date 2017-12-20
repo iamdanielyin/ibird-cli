@@ -74,9 +74,9 @@ function downloadBoilerplate(origin, projectDir) {
     download(origin, projectDir, (err) => {
         spinner.stop();
         if (err) {
-            console.log(chalk.red(`Failed to download repo https://github.com/${origin}`, err));
+            console.log(chalk.red(`Failed to download repo 'https://github.com/${origin}'`, err));
         } else {
-            console.log(chalk.green(`Success to download repo https://github.com/${origin} to ${projectDir}`));
+            console.log(chalk.green(`Success to download repo 'https://github.com/${origin}' to '${projectDir}'`));
         }
     })
 }
