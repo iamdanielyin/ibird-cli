@@ -21,11 +21,6 @@ let origin = 'yinfxs/ibird-boilerplate';
 const questions = [
     {
         type: 'input',
-        name: 'name',
-        message: `project name: (${cwdname})`,
-    },
-    {
-        type: 'input',
         name: 'path',
         message: 'project directory: (./)',
     },
@@ -62,25 +57,8 @@ if (program.yes) {
 function init(answers) {
     answers = answers || {};
     origin = answers.origin || origin;
-
-    const targetPath = path.resolve(cwd, answers.path || './');
-    const projectName = answers.name || cwdname;
-    const projectDir = path.join(targetPath, projectName);
-    if (exists(projectDir)) {
-        inquirer.prompt([
-            {
-                type: 'confirm',
-                name: 'delete',
-                message: chalk.yellow(`Directory(${projectDir}) already exists, do you want to overwrite this directory?`),
-            }
-        ]).then((confirms) => {
-            if (confirms.delete) {
-                fsx.removeSync(projectDir);
-                downloadBoilerplate(origin, projectDir);
-            }
-        });
-        return;
-    }
+    const projectDir = answers.path ? path.resolve(cwd, answers.path) : cwd;
+    fsx.ensureDirSync(projectDir);
     downloadBoilerplate(origin, projectDir);
 }
 
