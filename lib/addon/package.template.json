@@ -1,0 +1,27 @@
+{
+  "name": "{{namespace}}",
+  "version": "1.0.0",
+  "description": "{{description}}",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+{{{repository}}}.git"
+  },
+  "keywords": [
+    "ibird",
+    "node",
+    "koa",
+    "web",
+    "app",
+    "http",
+    "application",
+    "ibird-addon"
+  ],
+  "author": "{{author}}",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "{{{repository}}}/issues"
+  },
+  "homepage": "{{{repository}}}#readme",
+  "dependencies": {}
+}

@@ -1,0 +1,71 @@
+#!/usr/bin/env node
+
+/**
+ * 模块依赖
+ */
+
+const program = require('commander');
+const path = require('path');
+const fs = require('fs');
+const chalk = require('chalk');
+const inquirer = require('inquirer');
+const Mustache = require('mustache');
+const ora = require('ora');
+const cwd = process.cwd();
+const pkg = require('../package.json');
+
+const questions = [
+    {
+        type: 'input',
+        name: 'namespace',
+        message: 'your namespace: ',
+        validate: answer => !!answer
+    },
+    {
+        type: 'input',
+        name: 'description',
+        message: 'a short description: ',
+        default: 'template addon for ibird.'
+    },
+    {
+        type: 'input',
+        name: 'author',
+        message: 'your name: ',
+        default: 'ibird'
+    },
+    {
+        type: 'input',
+        name: 'repository',
+        message: 'code repository: ',
+        default: 'https://github.com/yinfxs/ibird'
+    },
+    {
+        type: 'input',
+        name: 'isPackage',
+        message: 'is it a package? : ',
+        default: false
+    }
+];
+
+program.version(pkg.version, '-v, --version')
+    .parse(process.argv);
+
+inquirer.prompt(questions).then((answers) => {
+    answers.date = new Date().toLocaleString();
+
+    const indexPath = path.resolve(__dirname, '../lib/addon/index.template.js');
+    const indexTemplate = fs.readFileSync(indexPath).toString();
+    const indexOutput = Mustache.render(indexTemplate, answers);
+    const indexOutputPath = path.join(cwd, `${answers.namespace}.js`);
+    fs.writeFileSync(indexOutputPath, indexOutput);
+    console.log(chalk.green(`Success to create file: ${indexOutputPath}`));
+
+    if (answers.isPackage) {
+        const packagePath = path.resolve(__dirname, '../lib/addon/package.template.json');
+        const packageTemplate = fs.readFileSync(packagePath).toString();
+        const packageOutput = Mustache.render(packageTemplate, answers);
+        const packageOutputPath = path.join(cwd, 'package.json');
+        fs.writeFileSync(packageOutputPath, packageOutput);
+        console.log(chalk.green(`Success to create file: ${packageOutputPath}`));
+    }
+});

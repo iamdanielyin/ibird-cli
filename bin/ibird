@@ -10,4 +10,5 @@ const pkg = require('../package.json');
 program.version(pkg.version, '-v, --version')
     .usage('<command>')
     .command('new', 'new a project')
+    .command('addon', 'create an addon')
     .parse(process.argv);

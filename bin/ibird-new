@@ -22,12 +22,14 @@ const questions = [
     {
         type: 'input',
         name: 'path',
-        message: 'project directory: (./)',
+        message: 'project directory: ',
+        default: './'
     },
     {
         type: 'input',
         name: 'origin',
-        message: `which boilerplate: (${origin})`,
+        message: `which boilerplate: `,
+        default: origin
     }
 ];
 
