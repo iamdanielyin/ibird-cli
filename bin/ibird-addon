@@ -62,7 +62,7 @@ inquirer.prompt(questions).then((answers) => {
     const indexPath = path.resolve(__dirname, '../lib/addon/index.template.js');
     const indexTemplate = fs.readFileSync(indexPath).toString();
     const indexOutput = Mustache.render(indexTemplate, answers);
-    const indexOutputPath = path.join(cwd, `${answers.fileName}.js`);
+    const indexOutputPath = path.join(cwd, `${answers.fileName}`);
     fs.writeFileSync(indexOutputPath, indexOutput);
     console.log(chalk.green(`Success to create file: ${indexOutputPath}`));
 
